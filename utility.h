@@ -23,3 +23,4 @@ void startTestGroup(std::string name);
 #define START_TEST_GROUP(name) startTestGroup(name)
 
 
+#endif
