@@ -17,7 +17,6 @@ void assertEquals(string expected,
 		  string actual, 
 		  std::string message="");
 
-
 void startTestGroup(std::string name);
 
 #define START_TEST_GROUP(name) startTestGroup(name)

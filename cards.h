@@ -7,7 +7,6 @@
 #include <string> 
 using namespace std; 
 
-
 class Cards{
  public:
       string suit; 
@@ -15,13 +14,13 @@ class Cards{
       Cards(); 
       Cards(string s, string cn);
       string getSuit(); 
-      string getCardNumber();  
+      string getCardNumber() const;  
 
 friend bool operator!= (Cards& c1, Cards& c2); 
 friend bool operator== (Cards& c1, Cards& c2);	
 friend bool operator<  (Cards& c1, Cards& c2); 
 friend bool operator<  (Cards& c1, Cards& c2); 
-friend bool operator>  (Cards& c1, Cards& c2); 
+friend bool operator>=  (Cards& c1, Cards& c2); 
 }; 
 
       struct Node {
@@ -38,11 +37,13 @@ class Hand{
 	 bool append(Cards c); 
 	 bool append(Cards c, Node* n); 
 	 Node* remove(Node* n, Cards c); 
-	 int length(); 
+	 int length() const;
+	 int length(Node* n) const;  
          void clear(Node* n); 
          Node* getNodeFor(Cards c, Node*n) const; 
-	 Node* getSuccessor(Cards c) const;   // returns the Node containing the successor of the given value
- //default root node
+	 Node* getSuccessor(Cards c) const;   // returns the Node containing the successor of the given card
+         Node* getPredecessor(Cards c) const; // returns the Node containing the predecessor of the given card
+	 //default root node
 	 Node* root; 
 }; 
 
@@ -54,7 +55,7 @@ class Player{
    Hand playerHand;
    Player(); //constructor
    Player(string pN, int cC); //paremetrized
-   string getName();
+   string getName() const;
    int getCounter();
    Hand getHand() const;
    void setName(string s);

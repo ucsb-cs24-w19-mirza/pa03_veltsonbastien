@@ -3,7 +3,8 @@
 #include "utility.h" 
 
 
-using std::cout; 
+using std::cout;
+
 
 //********** CARD ********** // 
 
@@ -21,7 +22,7 @@ Cards::Cards(){}
    return suit; 
   }
 
-  string Cards::getCardNumber(){
+  string Cards::getCardNumber() const{
     return cardNumber;
    }
 
@@ -48,6 +49,10 @@ Cards::Cards(){}
 	  return (c1.suit <= c2.suit && (c1.cardNumber <= c2.cardNumber));
   }
 
+//Overloaded >= operator:  
+  bool operator>= (Cards& c1, Cards& c2){
+	  return (c1.suit >= c2.suit && (c1.cardNumber >= c2.cardNumber));
+  }
 //Overloaded > operator:  
   bool operator> (Cards& c1, Cards& c2){
 	  return (c1.suit > c2.suit && (c1.cardNumber > c2.cardNumber));
@@ -58,9 +63,10 @@ Cards::Cards(){}
 //Constructor: 
 Hand::Hand():root(0){} 
 
+
 //Destructor: 
 Hand::~Hand(){
- clear(root); 
+// clear(root); 
 }
 
 // recursive helper for destructor
@@ -110,6 +116,23 @@ bool Hand::append(Cards c, Node* n){
 }
 
 
+int Hand::length() const {
+    return length(root);
+}
+
+//length() function 
+int Hand::length(Node* n) const{
+    if(n==NULL){
+     return 1;  
+    } //end of null check 
+    //update a count every time there is a node 
+    while(n != NULL){
+     return length(n->left) + length(n->right); 
+    }  
+    return 0; 
+}
+
+
 //remove() function 
 Node* Hand::remove(Node* n, Cards c){
    if(n == NULL) return root; 
@@ -120,12 +143,12 @@ Node* Hand::remove(Node* n, Cards c){
    else{
      if(n->left == NULL){
        Node* temp = n->right; 
-       free(root); 
+       delete n; 
        return temp; 
      }//end of if left == null 
      else if(n->right == NULL){
        Node* temp = n->left; 
-       free(root); 
+       delete n; 
        return temp; 
      }//end of if right == null 
      Node* temp = getSuccessor(n->right->info); 
@@ -172,6 +195,33 @@ Node* Hand::getSuccessor(Cards c) const{
       return root;  
 }
 
+Node* Hand::getPredecessor(Cards c) const{   
+	Node* n = getNodeFor(c, root); 
+	Node* temp = 0; 
+	if(n->left != 0){
+          temp = n->left; 
+	  while(temp->right != 0){
+            temp = temp->right; 
+	  }//end of while 
+	  return temp; 
+	}//end of if
+        else{
+         Node* temp2 = root;
+	 Node* n2 = getNodeFor(c, root); 
+	 while(temp2->info != n2->info){
+           if(n2->info >= temp2->info){
+              temp = temp2;
+	      temp2 = temp2->right; 
+	   }//end of inner if 
+           else{
+            temp2 = temp2->left; 
+	   }//end of else 
+	 }//end of while 
+	 return temp;
+	}	
+	return root; 
+}
+
 
 //********** PLAYER ********** // 
 
@@ -194,7 +244,7 @@ Node* Hand::getSuccessor(Cards c) const{
     playerHand = *h;
    }
 
-   string Player::getName(){
+   string Player::getName() const{
     return playerName;
    }
 
@@ -207,16 +257,19 @@ Node* Hand::getSuccessor(Cards c) const{
    }
 
  void Player::printInOrder() const {
-    printInOrder(getHand().root);
+        
+	 cout<<this->getName()<<"'s cards: "<<endl; 
+     	 printInOrder(getHand().root);
  }
 
  void Player::printInOrder(Node* n) const {
+    
     //check the edge cases first 
     if(n!=NULL){
       if(n->left){
         printInOrder(n->left); 
       }//end of n-left
-         cout<<n->info.suit<<" "<<n->info.cardNumber; 
+         cout<<n->info.suit<<" "<<n->info.cardNumber<<endl; 
       if(n->right){
         printInOrder(n->right); 
       }//end of n-right
