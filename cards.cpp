@@ -28,7 +28,7 @@ Cards::Cards(){}
 
 //Overloaded != operator: 
   bool operator!= (Cards& c1, Cards& c2){
-          return (c2.suit == c2.suit && (c1.cardNumber == c2.cardNumber)); 
+     	  return (c2.suit == c2.suit && (c1.cardNumber == c2.cardNumber)); 
   }
 
 
@@ -172,7 +172,7 @@ Node* Hand::getNodeFor(Cards c, Node* n) const{
 Node* Hand::getSuccessor(Cards c) const{
       Node* n = getNodeFor(c,root); 
       Node* temp = 0; 
-      if(n->right != 0){
+      if(n!=0 && n->right != 0){
         temp = n->right; 
 	while(temp->left != 0){
           temp = temp->left; 
@@ -224,10 +224,10 @@ Node* Hand::getPredecessor(Cards c) const{
 
 
 Node* Hand::getMin(Node* n) const{
-  while(n && n->left != 0){
+  while(n->left != 0){
    n = n->left; 
   } 
-  return getMin(root); 
+  return n; 
 }
 
 

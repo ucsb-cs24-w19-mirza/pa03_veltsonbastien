@@ -67,32 +67,41 @@ int main(int argv, char** argc){
   p2.setHand(h2);
 
   int playerToTest = 1; 
-
-  if(playerToTest==1){ 
+  
      Node* stIterator = p2.getHand().getMin(p2.getHand().root);
      Node* refIterator = p1.getHand().getMin(p1.getHand().root); 
-     
+
+  while( p2.getHand().getSuccessor( stIterator->info ) != 0 && p1.getHand().getSuccessor(refIterator->info)) {
+  
+  if(playerToTest==1){ 
+     stIterator = p2.getHand().getMin(p2.getHand().root);
+     refIterator = p1.getHand().getMin(p1.getHand().root); 
+     cout<<"Starting the game. Checking mins: "<<refIterator->info.suit<<","<<refIterator->info.cardNumber<<endl;  
+     cout<<"and the other one is: "<<stIterator->info.suit<<","<<stIterator->info.cardNumber<<endl;
      //check while they both have a successor aka, we are not at the end of the BST
      while( p2.getHand().getSuccessor( stIterator->info ) != 0 && p1.getHand().getSuccessor(refIterator->info)) {
      //checkInOrder will return a boolean if the currently   
+     cout<<"i'm in the first while"<<endl; 
      if( p1.checkInOrder(stIterator, refIterator) ){
-       //if they matched, remove them both 
+       //if they matched, remove them both
+       cout<<"there was a match found"<<endl;  
        p1.getHand().remove(stIterator, stIterator->info); 
        p2.getHand().remove(refIterator, refIterator->info); 
        //then switch the player 
        playerToTest = 2; 
        //now break out of loop 
        break;        
-      }
+      } 
        //if they were not the same, move on the stIterator 
+       cout<<"nothing found, increasing the iterator"<<endl; 
        stIterator = p2.getHand().getSuccessor( stIterator->info );
      }//end of while 
   }//end of if player to test is 1
   
   if(playerToTest==2){  
      Node* stIterator = p1.getHand().getMin(p1.getHand().root);
-     Node* refIterator = p2.getHand().getMin(p2.getHand().root); 
-  
+     Node* refIterator = p2.getHand().getMin(p2.getHand().root);
+
      //check while they both have a successor aka, we are not at the end of the BST
      while(p1.getHand().getSuccessor(stIterator->info) != 0 && p2.getHand().getSuccessor(refIterator->info) ) {
      //checkInOrder will return a boolean if the currently   
@@ -109,10 +118,11 @@ int main(int argv, char** argc){
        stIterator = p1.getHand().getSuccessor(stIterator->info);
      }//end of while
    }//end of if player to test is 2 
+     refIterator = p2.getHand().getSuccessor(refIterator->info);
+  }//end of big while 
 
   p1.printInOrder();  
   p2.printInOrder();
-
 
   return 0; 
 
