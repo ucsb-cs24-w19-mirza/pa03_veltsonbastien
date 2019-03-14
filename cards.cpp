@@ -172,9 +172,9 @@ Node* Hand::getNodeFor(Cards c, Node* n) const{
 Node* Hand::getSuccessor(Cards c) const{
       Node* n = getNodeFor(c,root); 
       Node* temp = 0; 
-      if(n->right != NULL){
+      if(n->right != 0){
         temp = n->right; 
-	while(temp->left != NULL){
+	while(temp->left != 0){
           temp = temp->left; 
 	}//end of while 
 	return temp; 
@@ -220,6 +220,14 @@ Node* Hand::getPredecessor(Cards c) const{
 	 return temp;
 	}	
 	return root; 
+}
+
+
+Node* Hand::getMin(Node* n) const{
+  while(n && n->left != 0){
+   n = n->left; 
+  } 
+  return getMin(root); 
 }
 
 
@@ -275,4 +283,24 @@ Node* Hand::getPredecessor(Cards c) const{
       }//end of n-right
     }//end of null check     
  }
+
+
+
+   bool Player::checkInOrder(Node* st, Node* ref){
+    //check the edge cases first 
+    if(st!=NULL){
+      if(st->left){
+        checkInOrder(st->left, ref); 
+      }//end of st-left
+      
+      if(st->info == ref->info){
+        return true;         
+      }
+
+      if(st->right){
+        checkInOrder(st->right, ref); 
+      }//end of st-right
+    }//end of null check   
+     return false; 
+   }
 

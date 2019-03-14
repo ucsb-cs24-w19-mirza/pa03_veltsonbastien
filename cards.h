@@ -16,11 +16,11 @@ class Cards{
       string getSuit(); 
       string getCardNumber() const;  
 
-friend bool operator!= (Cards& c1, Cards& c2); 
-friend bool operator== (Cards& c1, Cards& c2);	
-friend bool operator<  (Cards& c1, Cards& c2); 
-friend bool operator<  (Cards& c1, Cards& c2); 
-friend bool operator>=  (Cards& c1, Cards& c2); 
+      friend bool operator!= (Cards& c1, Cards& c2); 
+      friend bool operator== (Cards& c1, Cards& c2);	
+      friend bool operator<  (Cards& c1, Cards& c2); 
+      friend bool operator<  (Cards& c1, Cards& c2); 
+      friend bool operator>=  (Cards& c1, Cards& c2); 
 }; 
 
       struct Node {
@@ -43,6 +43,7 @@ class Hand{
          Node* getNodeFor(Cards c, Node*n) const; 
 	 Node* getSuccessor(Cards c) const;   // returns the Node containing the successor of the given card
          Node* getPredecessor(Cards c) const; // returns the Node containing the predecessor of the given card
+         Node* getMin(Node* n) const; 
 	 //default root node
 	 Node* root; 
 }; 
@@ -62,7 +63,8 @@ class Player{
    void setCounter(int counter);
    void setHand(Hand* h);	
    void printInOrder() const;
-   void printInOrder(Node* n) const; 	 
+   void printInOrder(Node* n) const; 
+   bool checkInOrder(Node* st, Node* ref);    
 }; 
 
 #endif
