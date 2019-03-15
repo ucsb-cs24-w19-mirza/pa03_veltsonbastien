@@ -1,306 +1,304 @@
-#include <iostream> 
-#include "cards.h" 
-#include "utility.h" 
+//cards.cpp
+//Authors: Veltson Bastien
 
+#include "cards.h"
+#include <iostream>
 
-using std::cout;
+using namespace std;
 
-
-//********** CARD ********** // 
-
-//Default Constructor: 
-Cards::Cards(){} 
-
-//Parametrized Constructor: 
-   Cards::Cards(string s, string cn){
-    suit = s; 
-    cardNumber = cn; 
-   }
-
-//Getters: 
-  string Cards::getSuit(){
-   return suit; 
-  }
-
-  string Cards::getCardNumber() const{
-    return cardNumber;
-   }
-
-//Overloaded != operator: 
-  bool operator!= (Cards& c1, Cards& c2){
-     	  return (c2.suit == c2.suit && (c1.cardNumber == c2.cardNumber)); 
-  }
-
-
-//Overloaded == operator:  
-  bool operator== (Cards& c1, Cards& c2){
-	  return (c1.suit == c2.suit && (c1.cardNumber == c2.cardNumber));
-  }
-
-
-//Overloaded < operator:  
-  bool operator< (Cards& c1, Cards& c2){
-	  return (c1.suit < c2.suit && (c1.cardNumber < c2.cardNumber));
-  }
-
-
-//Overloaded <= operator:  
-  bool operator<= (Cards& c1, Cards& c2){
-	  return (c1.suit <= c2.suit && (c1.cardNumber <= c2.cardNumber));
-  }
-
-//Overloaded >= operator:  
-  bool operator>= (Cards& c1, Cards& c2){
-	  return (c1.suit >= c2.suit && (c1.cardNumber >= c2.cardNumber));
-  }
-//Overloaded > operator:  
-  bool operator> (Cards& c1, Cards& c2){
-	  return (c1.suit > c2.suit && (c1.cardNumber > c2.cardNumber));
-  }
-
-//********** HAND ********** //
-
-//Constructor: 
-Hand::Hand():root(0){} 
-
-
-//Destructor: 
-Hand::~Hand(){
-// clear(root); 
+Card::Card(char s, string v) {
+        suit = s;
+        value = v;
 }
 
-// recursive helper for destructor
-void Hand::clear(Node *n) {
-    if (n) {
-	clear(n->left);
-	clear(n->right);
-	delete n;
-    }
+Card::Card(const Card& c) {
+        suit = c.getSuit();
+        value = c.getCardNumber();
 }
 
-
-//append() function for special case: 
-bool Hand::append(Cards c){
-    // handle special case of empty tree first
-    if (!root) {
-	root = new Node(c);
-	return true;
-    }
-    // otherwise use recursive helper
-    return append(c, root);	
+char Card::getSuit() const {
+        return suit;
 }
 
-
-//append() function after special case handled : 
-bool Hand::append(Cards c, Node* n){
-    if (c == n->info)
-	return false;
-    if (c < n->info) {
-	if (n->left)
-	    return append(c, n->left);
-	else {
-	    n->left = new Node(c);
-	    n->left->parent = n;
-	    return true;
-	}
-    }
-    else {
-	if (n->right)
-	    return append(c, n->right);
-	else {
-	    n->right = new Node(c);
-	    n->right->parent = n;
-	    return true;
-	}
-    }  
+string Card::getCardNumber() const {
+        return value;
 }
 
-
-int Hand::length() const {
-    return length(root);
+bool operator==(const Card& c1, const Card& c2) {
+        return (c1.getSuit() == c2.getSuit() && c1.getCardNumber() == c2.getCardNumber());
 }
 
-//length() function 
-int Hand::length(Node* n) const{
-    if(n==NULL){
-     return 1;  
-    } //end of null check 
-    //update a count every time there is a node 
-    while(n != NULL){
-     return length(n->left) + length(n->right); 
-    }  
-    return 0; 
+bool operator<(const Card& c1, const Card& c2) {
+        int s1 = 0, s2 = 0;
+        s1 = c1.orderCard();
+        s2 = c2.orderCard();
+        return s1 < s2;
 }
 
-
-//remove() function 
-Node* Hand::remove(Node* n, Cards c){
-   if(n == NULL) return root; 
-   if(c < n->info) 
-	   n->left = remove(n->left, c); 
-   else if(c > n->info)
-	   n->right = remove(n->right, c); 
-   else{
-     if(n->left == NULL){
-       Node* temp = n->right; 
-       delete n; 
-       return temp; 
-     }//end of if left == null 
-     else if(n->right == NULL){
-       Node* temp = n->left; 
-       delete n; 
-       return temp; 
-     }//end of if right == null 
-     Node* temp = getSuccessor(n->right->info); 
-     n->info = temp->info; 
-     n->right = remove(n->right, temp->info); 
-   } //end of else 
-   return n; 
-}//end of remove 
-
-Node* Hand::getNodeFor(Cards c, Node* n) const{
-    //edge case 
-    if(n==NULL) return n; 
-    //if they're the same, return root 
-    else if(n->info == c) return n;
-    //check if we need to continue down the left side  
-    else if(c <= n->info) return getNodeFor(c, n->left); 
-    //or check if we need to continue down the right side
-    else return getNodeFor(c, n->right); 
+bool operator>(const Card& c1, const Card& c2) {
+        return !(c1 < c2);
 }
 
-Node* Hand::getSuccessor(Cards c) const{
-      Node* n = getNodeFor(c,root); 
-      Node* temp = 0; 
-      if(n!=0 && n->right != 0){
-        temp = n->right; 
-	while(temp->left != 0){
-          temp = temp->left; 
-	}//end of while 
-	return temp; 
-      } else{
-        Node* temp2 = root; 
-	Node* n2 = getNodeFor(c, root); //512 
-	while(temp2->info != n2->info){
-         if(n2->info <= temp2->info){
-	  temp = temp2; 
-	  temp2 = temp2->left; 
-	 }//end of if check 
-	  else{
-           temp2 = temp2->right;
-	  }
-	}//end of second while 
-         return temp; 	
-      }
-      return root;  
+ostream& operator<<(ostream& stream, const Card& card) {
+        stream << card.getSuit() << " " << card.getCardNumber();
+        return stream;
 }
 
-Node* Hand::getPredecessor(Cards c) const{   
-	Node* n = getNodeFor(c, root); 
-	Node* temp = 0; 
-	if(n->left != 0){
-          temp = n->left; 
-	  while(temp->right != 0){
-            temp = temp->right; 
-	  }//end of while 
-	  return temp; 
-	}//end of if
-        else{
-         Node* temp2 = root;
-	 Node* n2 = getNodeFor(c, root); 
-	 while(temp2->info != n2->info){
-           if(n2->info >= temp2->info){
-              temp = temp2;
-	      temp2 = temp2->right; 
-	   }//end of inner if 
-           else{
-            temp2 = temp2->left; 
-	   }//end of else 
-	 }//end of while 
-	 return temp;
-	}	
-	return root; 
+int Card::orderCard() const {
+        int num = 0;
+        char s = getSuit();
+        if(s == 'c') num += 100;
+        else if(s == 'd') num += 200;
+        else if(s == 's') num += 300;
+        else if(s == 'h') num += 400;
+
+        string v = getCardNumber();
+        if(v == "a") num += 1;
+        else if(v == "2") num += 2;
+        else if(v == "3") num += 3;
+        else if(v == "4") num += 4;
+        else if(v == "5") num += 5;
+        else if(v == "6") num += 6;
+        else if(v == "7") num += 7;
+        else if(v == "8") num += 8;
+        else if(v == "9") num += 9;
+        else if(v == "10") num += 10;
+        else if(v == "j") num += 11;
+        else if(v == "q") num += 12;
+        else if(v == "k") num += 13;
+
+        return num;
 }
 
-
-Node* Hand::getMin(Node* n) const{
-  while(n->left != 0){
-   n = n->left; 
-  } 
-  return n; 
+Hand::Hand(string namepass) {
+        name = namepass;
 }
 
+Hand::~Hand() {
+        Node *n = find(getSmallestCard());
+        while(n) {
+                Node *r = n;
+                n = successor(n);
+                remove(r->value);
+        }
+}
 
-//********** PLAYER ********** // 
+Card* Hand::getNextCard(Card *c) const {
+        Node *n = find(c);
+        Node *ne = successor(n);
+        if(ne) return ne->value;
+        else return nullptr;
+}
 
- Player::Player(string pn, int cc){
-     playerName = pn;
-     currentCounter = cc;
-   }
+Card* Hand::getPrevCard(Card *c) const {
+        Node *n = find(c);
+        Node *ne = predecessor(n);
+        if(ne) return ne->value;
+        else return nullptr;
+}
 
-   //member functions
+void Hand::printInorder() const {
+        printInorder(root);
+}
 
-   void Player::setName(string s){
-     playerName = s;
-   }//end of s
+bool Hand::contains(Card *c) const {
+        Node *n = find(c);
+        return n != nullptr;
+}
 
-   void Player::setCounter(int counter){
-    currentCounter = counter;
-   }
+Card* Hand::getSmallestCard() const {
+        Node *t = root;
+        while(t->left) {
+                t = t->left;
+        }
+        return t->value;
+}
 
-   void Player::setHand(Hand* h){
-    playerHand = *h;
-   }
+Card* Hand::getLargestCard() const {
+        Node *t = root;
+        while(t->right) {
+                t = t->right;
+        }
+        return t->value;
+}
 
-   string Player::getName() const{
-    return playerName;
-   }
+string Hand::getName() const {
+        return name;
+}
 
-   int Player::getCounter(){
-    return currentCounter;
-   }
+void Hand::remove(Card *c) {
+        Node* n = find(c);
 
-   Hand Player::getHand() const{
-    return playerHand;
-   }
+        if(!n) {
+                return;
+        }
 
- void Player::printInOrder() const {
-        
-	 cout<<this->getName()<<"'s cards: "<<endl; 
-     	 printInOrder(getHand().root);
- }
+        Node* parent = n->parent;
+        if(parent) {
+                if(!n->left) {
+                        if(parent->right == n) {
+                                parent->right = n->right;
+                        } else {
+                                parent->left = n->right;
+                        }
+                        if(n->right) {
+                                n->right->parent = parent;
+                        }
+			//delete n->value;
+                        //delete n;
+                       	return;
+                } else if (!n->right) {
+                        if(parent->left == n) {
+                                parent->left = n->left;
+                        } else {
+                                parent->right = n->left;
+                        }
+                        if(n->left) {
+                                n->left->parent = parent;
+                        }
+			//delete n->value;
+                        //delete n;
+                        return;
+                }
 
- void Player::printInOrder(Node* n) const {
-    
-    //check the edge cases first 
-    if(n!=NULL){
-      if(n->left){
-        printInOrder(n->left); 
-      }//end of n-left
-         cout<<n->info.suit<<" "<<n->info.cardNumber<<endl; 
-      if(n->right){
-        printInOrder(n->right); 
-      }//end of n-right
-    }//end of null check     
- }
+                //Two children
+                Node* succ = successor(n);
+                remove(succ->value);
+                n->value = succ->value;
+        } else {
+                //ROOT
+                //One child or none
+                if(!n->left) {
+                        root = n->right;
+                        if(root) root->parent = nullptr;
+                        //delete n->value;
+                        //delete n
+            		return;
+                } else if (!n->right) {
+                        root = n->left;
+                        if(root) root->parent = nullptr;
+                        ///delete n->value;
+                        //delete n;
+			return;
+                }
+                //Two children
+                Node* succ = successor(n);
+                remove(succ->value);
+                n->value = succ->value;
+        }
 
+        return;
+}
 
+void Hand::insert(Card *c) {
+        if (!root) {
+                root = new Node(c);
+        } else {
+                insert(c, root);
+        }
+}
 
-   bool Player::checkInOrder(Node* st, Node* ref){
-    //check the edge cases first 
-    if(st!=NULL){
-      if(st->left){
-        checkInOrder(st->left, ref); 
-      }//end of st-left
-      
-      if(st->info == ref->info){
-        return true;         
-      }
+ostream& operator<<(ostream& stream, const Hand& hand) {
+        stream << hand.name << "'s cards:" << endl;
+        hand.printInorder();
+        return stream;
+}
 
-      if(st->right){
-        checkInOrder(st->right, ref); 
-      }//end of st-right
-    }//end of null check   
-     return false; 
-   }
+void Hand::printInorder(Node* n) const {
+        if (!n) return;
+        printInorder(n->left);
+        cout << *(n->value) << endl;
+        printInorder(n->right);
+}
+
+void Hand::insert(Card* c, Node *n) {
+        if (*c == *(n->value))
+                return;
+
+        if (*c < *(n->value)) {
+                if (n->left)
+                        return insert(c, n->left);
+                else {
+                        n->left = new Node(c);
+                        n->left->parent = n;
+                        return;
+                }
+        }
+        else {
+                if (n->right) {
+                        return insert(c, n->right);
+                }
+                else {
+                        n->right = new Node(c);
+                        n->right->parent = n;
+                        return;
+                }
+        }
+}
+
+Node* Hand::predecessor(Node *n) const {
+        if(!n) return nullptr;
+
+        if(*(getSmallestCard()) == *(n->value))
+                return nullptr;
+
+        if(n->left) {
+                n = n->left;
+                while(n->right) {
+                        n = n->right;
+                }
+                return n;
+        }
+
+        Node *p = n->parent;
+        while(p && p->left && *(n->value) == *(p->left->value)) {
+                n = p;
+                if(!p->parent) break;
+                p = p->parent;
+        }
+
+        return p;
+}
+
+Node* Hand::successor(Node *n) const {
+        if(!n) return nullptr;
+
+        if(*(getLargestCard()) == *(n->value))
+                return nullptr;
+
+        if(n->right) {
+                n = n->right;
+                while(n->left) {
+                        n = n->left;
+                }
+                return n;
+        }
+
+        Node *p = n->parent;
+        while(p && p->right && *(n->value) == *(p->right->value)) {
+                n = p;
+                if(!p->parent) break;
+                p = p->parent;
+        }
+
+        return p;
+}
+
+Node* Hand::find(Card *c) const {
+        if(!root) {
+                return nullptr;
+        }
+        return search(root, c);
+}
+
+bool isCard(Card *c){
+  return c->getSuit() == 's' && c->getCardNumber() == "q";
+}
+
+Node* Hand::search(Node* n, Card *c) const {
+        if(!n) return nullptr;
+        if(*(n->value) == *c) return n;
+        if(*(n->value) < *c) return search(n->right, c);
+        return search(n->left, c);
+}
 
